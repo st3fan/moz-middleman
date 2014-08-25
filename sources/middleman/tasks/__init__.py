@@ -1,0 +1,64 @@
+
+
+import json
+import time
+import subprocess
+import threading
+import Queue
+
+from redis import StrictRedis
+import selenium
+
+from middleman.methods.persona import login as persona_login
+
+
+redis = StrictRedis(host='localhost', port=6379, db=0)
+
+
+def parse_cookies(header):
+    cookies = {}
+    for cookie in header.split(";"):
+        cookie = cookie.strip()
+        if len(cookie) != 0:
+            (name,value) = cookie.split("=", 1)
+            if name and value:
+                cookies[name] = value
+    return cookies
+
+
+def broker_persona_session(session):
+    try:
+        driver = selenium.webdriver.Remote(
+            desired_capabilities=selenium.webdriver.DesiredCapabilities.FIREFOX,
+            command_executor="http://127.0.0.1:4444/wd/hub")
+        return persona_login(driver, session["config"])
+    except Exception as e:
+        print "Failed to broker persona session", str(e)
+        return None
+    finally:
+        driver.quit()
+
+
+def broker_session(session_id, config):
+
+    print "Brokering %s session for %s" % (config['method'], config['url'])
+
+    session_json = redis.get("session:%s" % session_id)
+    session = json.loads(session_json)
+    config = session["config"]
+
+    if session["config"]["method"] == "persona":
+        cookies = broker_persona_session(session)
+        if not cookies:
+            session["cookies"] = None
+            session["state"] = "FAILURE"
+            session["reason"] = "No cookies found"
+        else:
+            session["cookies"] = cookies
+            session["state"] = "FINISHED"
+    else:
+        session["state"] = "FAILURE"
+        session["reason"] = "Unknown method '%s'" % session["config"]["method"]
+
+    print "RESULT", json.dumps(session, indent=4)
+    redis.set("session:%s" % session_id, json.dumps(session))
