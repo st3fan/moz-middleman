@@ -6,10 +6,10 @@ Mozilla Middleman is a web service that can login to sites and return you the se
 Middleman currently supports the following authentication methods:
 
  * Mozilla Persona
+ * Firefox Accounts
 
 With the following planned:
 
- * Firefox Accounts
  * Basic Authentication
  * Form Based Authentication
 
