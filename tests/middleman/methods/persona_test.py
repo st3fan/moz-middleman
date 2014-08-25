@@ -3,7 +3,7 @@
 import os
 import unittest
 import selenium
-import persona
+import middleman.methods.persona as persona
 
 
 class PersonaTestCase(unittest.TestCase):
@@ -41,10 +41,10 @@ class PersonaTestCase(unittest.TestCase):
 
     def test_marketplace(self):
         marketplace_config = {
-            "url": "https://marketplace.firefox.com",
+            "url": "https://marketplace.firefox.com/settings",
             "email": self.email,
             "password": self.password,
-            "login_button_xpath": "//a[@class='header-button persona']",
+            "login_button_xpath": "//a[@class='button alt persona only-logged-out']",
             "after_login_element_xpath": "//a[@href='/settings']"
         }
         cookies = persona.login(self.driver, marketplace_config)
