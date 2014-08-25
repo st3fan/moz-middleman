@@ -16,11 +16,14 @@ redis = StrictRedis(host='localhost', port=6379, db=0)
 queue = Queue(connection=Redis())
 
 
+DEFAULT_SESSION_EXPIRATION = 300
+
+
 @app.route("/sessions", methods=["POST"])
 def post_session():
     config = request.json
     session = {"id": str(uuid.uuid4()), "state":"WORKING", "config":config}
-    redis.set("session:%s" % session["id"], json.dumps(session))
+    redis.setex("session:%s" % session["id"], DEFAULT_SESSION_EXPIRATION, json.dumps(session))
     result = queue.enqueue(broker_session, session["id"], config)
     return jsonify(success=True, session=session)
 
