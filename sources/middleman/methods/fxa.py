@@ -9,9 +9,9 @@ from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import WebDriverWait
 
 
-FXA_SIGNIN_HEADER = "h1//[@id='fxa-signin-header']"
-FXA_EMAIL_ELEMENT = "input//[@class='email']"
-FXA_PASSWORD_ELEMENT = "input//[@id='password']"
+FXA_SIGNIN_HEADER = "//h1[@id='fxa-signin-header']"
+FXA_EMAIL_ELEMENT = "//input[@class='email']"
+FXA_PASSWORD_ELEMENT = "//input[@id='password']"
 
 
 def login(driver, config):
@@ -45,7 +45,7 @@ def login(driver, config):
     # and submit.
     input = WebDriverWait(driver, 30).until(
         expected_conditions.visibility_of_element_located(
-            (By.ID, FXA_EMAIL_ELEMENT_ID)))
+            (By.XPATH, FXA_EMAIL_ELEMENT)))
     input.send_keys(config['email'])
     input.send_keys(Keys.RETURN)
 
@@ -53,7 +53,7 @@ def login(driver, config):
     # password and submit
     input = WebDriverWait(driver, 30).until(
         expected_conditions.visibility_of_element_located(
-            (By.ID, FXA_PASSWORD_ELEMENT_ID)))
+            (By.XPATH, FXA_PASSWORD_ELEMENT)))
     input.send_keys(config['password'])
     input.send_keys(Keys.RETURN)
 
