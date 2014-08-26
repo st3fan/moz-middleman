@@ -16,18 +16,7 @@ from middleman.methods.fxa import login as fxa_login
 redis = StrictRedis(host='localhost', port=6379, db=0)
 
 
-def parse_cookies(header):
-    cookies = {}
-    for cookie in header.split(";"):
-        cookie = cookie.strip()
-        if len(cookie) != 0:
-            (name,value) = cookie.split("=", 1)
-            if name and value:
-                cookies[name] = value
-    return cookies
-
-
-def broker_persona_session(config):
+def _broker_persona_session(config):
     try:
         driver = selenium.webdriver.Remote(
             desired_capabilities=selenium.webdriver.DesiredCapabilities.FIREFOX,
@@ -40,7 +29,7 @@ def broker_persona_session(config):
         driver.quit()
 
 
-def broker_fxa_session(config):
+def _broker_fxa_session(config):
     try:
         driver = selenium.webdriver.Remote(
             desired_capabilities=selenium.webdriver.DesiredCapabilities.FIREFOX,
@@ -68,9 +57,9 @@ def broker_session(session_id):
     print "Brokering %s session for %s" % (config['method'], config['url'])
 
     if session["config"]["method"] == "persona":
-        cookies = broker_persona_session(session["config"])
+        cookies = _broker_persona_session(session["config"])
     if session["config"]["method"] == "fxa":
-        cookies = broker_fxa_session(session["config"])
+        cookies = _broker_fxa_session(session["config"])
     else:
         session["state"] = "FAILURE"
         session["reason"] = "Unknown method '%s'" % session["config"]["method"]
