@@ -69,6 +69,9 @@ def broker_session(session_id):
             session["state"] = "FAILURE"
             session["reason"] = "No cookies found"
         else:
+            for cookie in cookies:
+                del cookie["hCode"]
+                del cookie["class"]
             session["cookies"] = cookies
             session["state"] = "SUCCESS"
     except Exception as e:
