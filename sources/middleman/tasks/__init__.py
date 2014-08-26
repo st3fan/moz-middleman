@@ -56,6 +56,8 @@ def broker_fxa_session(config):
 
 def broker_session(session_id):
 
+    start_time = time.time()
+
     session_json = redis.get("session:%s" % session_id)
     if not session_json:
         return
@@ -74,6 +76,8 @@ def broker_session(session_id):
         session["reason"] = "Unknown method '%s'" % session["config"]["method"]
         redis.set("session:%s" % session_id, json.dumps(session))
         return
+
+    session["duration"] = time.time() - start_time
 
     if not cookies:
         session["cookies"] = None
