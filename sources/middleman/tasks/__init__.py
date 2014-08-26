@@ -54,13 +54,16 @@ def broker_fxa_session(config):
         driver.quit()
 
 
-def broker_session(session_id, config):
-
-    print "Brokering %s session for %s" % (config['method'], config['url'])
+def broker_session(session_id):
 
     session_json = redis.get("session:%s" % session_id)
+    if not session_json:
+        return
+
     session = json.loads(session_json)
     config = session["config"]
+
+    print "Brokering %s session for %s" % (config['method'], config['url'])
 
     if session["config"]["method"] == "persona":
         cookies = broker_persona_session(session["config"])
@@ -77,7 +80,7 @@ def broker_session(session_id, config):
         session["state"] = "FAILURE"
         session["reason"] = "No cookies found"
     else:
-        session["result"] = dict(cookies=cookies)
+        session["cookies"] = cookies
         session["state"] = "SUCCESS"
 
     print "RESULT", json.dumps(session, indent=4)

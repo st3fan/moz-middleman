@@ -22,10 +22,12 @@ DEFAULT_SESSION_EXPIRATION = 300
 @app.route("/sessions", methods=["POST"])
 def post_session():
     config = request.json
-    session = {"id": str(uuid.uuid4()), "state":"WORKING", "config":config}
-    redis.setex("session:%s" % session["id"], DEFAULT_SESSION_EXPIRATION, json.dumps(session))
-    result = queue.enqueue(broker_session, session["id"], config)
-    return jsonify(success=True, session=session)
+    # TODO Validate config
+    response = dict(config=config, id=str(uuid.uuid4()), state="WORKING")
+    redis.setex("session:%s" % response["id"], DEFAULT_SESSION_EXPIRATION, json.dumps(response))
+    queue.enqueue(broker_session, response["id"])
+    del response["config"]
+    return jsonify(response)
 
 @app.route("/sessions/<session_id>", methods=["GET"])
 def get_session(session_id):
@@ -33,4 +35,5 @@ def get_session(session_id):
     if not session_json:
         abort(404)
     session = json.loads(session_json)
-    return jsonify(success=True, session=session)
+    del session["config"]
+    return jsonify(session)
