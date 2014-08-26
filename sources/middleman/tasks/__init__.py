@@ -70,8 +70,10 @@ def broker_session(session_id):
             session["reason"] = "No cookies found"
         else:
             for cookie in cookies:
-                del cookie["hCode"]
-                del cookie["class"]
+                if "hCode" in cookie:
+                    del cookie["hCode"]
+                if "class" in cookie:
+                    del cookie["class"]
             session["cookies"] = cookies
             session["state"] = "SUCCESS"
     except Exception as e:
