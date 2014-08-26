@@ -73,17 +73,6 @@ class PersonaTestCase(unittest.TestCase):
         cookies = persona.login(self.driver, config)
         self.assertTrue(len(cookies) > 0)
 
-    def test_reps(self):
-        config = {
-            "url": "https://affiliates.mozilla.org",
-            "email": self.email,
-            "password": self.password,
-            "login_button_xpath": "//a[@class='browserid-login persona-button']",
-            "after_login_element_xpath": "//a[@aria-owns='nav-user-submenu']"
-        }
-        cookies = persona.login(self.driver, config)
-        self.assertTrue(len(cookies) > 0)
-
     def test_affiliates(self):
         config = {
             "url": "https://affiliates.mozilla.org",
