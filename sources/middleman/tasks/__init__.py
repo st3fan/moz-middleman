@@ -39,8 +39,6 @@ def broker_session(session_id):
     session = json.loads(session_json)
     config = session["config"]
 
-    print "Brokering %s session for %s" % (config['method'], config['url'])
-
     session_broker = SESSION_BROKERS.get(config["method"])
     if session_broker is None:
         session["state"] = "FAILURE"
