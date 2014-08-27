@@ -7,7 +7,7 @@ import uuid
 
 from redis import Redis, StrictRedis
 from rq import Queue
-from flask import Flask, jsonify, request, abort
+from flask import Flask, jsonify, request, abort, Response
 
 from middleman.api import app
 from middleman.tasks import broker_session
@@ -37,3 +37,10 @@ def get_session(session_id):
     session = json.loads(session_json)
     del session["config"]
     return jsonify(session)
+
+@app.route("/screenshots/<screenshot_id>", methods=["GET"])
+def get_screenshot(screenshot_id):
+    screenshot_png = redis.get("screenshot:%s" % screenshot_id)
+    if not screenshot_png:
+        abort(404)
+    return Response(screenshot_png, mimetype="image/png")

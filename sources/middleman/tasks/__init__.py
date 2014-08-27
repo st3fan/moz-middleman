@@ -8,6 +8,7 @@ import Queue
 
 from redis import StrictRedis
 import selenium
+import selenium.common.exceptions
 
 from middleman.methods.persona import login as persona_login
 from middleman.methods.fxa import login as fxa_login
@@ -16,24 +17,11 @@ from middleman.methods.fxa import login as fxa_login
 redis = StrictRedis(host='localhost', port=6379, db=0)
 
 
-def _broker_persona_session(config):
-    try:
-        driver = selenium.webdriver.Remote(
-            desired_capabilities=selenium.webdriver.DesiredCapabilities.FIREFOX,
-            command_executor="http://127.0.0.1:4444/wd/hub")
-        return persona_login(driver, config)
-    finally:
-        driver.quit()
+def _broker_persona_session(driver, config):
+    return persona_login(driver, config)
 
-
-def _broker_fxa_session(config):
-    try:
-        driver = selenium.webdriver.Remote(
-            desired_capabilities=selenium.webdriver.DesiredCapabilities.FIREFOX,
-            command_executor="http://127.0.0.1:4444/wd/hub")
-        return fxa_login(driver, config)
-    finally:
-        driver.quit()
+def _broker_fxa_session(driver, config):
+    return fxa_login(driver, config)
 
 
 SESSION_BROKERS = {
@@ -63,7 +51,10 @@ def broker_session(session_id):
     start_time = time.time()
 
     try:
-        cookies = session_broker(config)
+        driver = selenium.webdriver.Remote(
+            desired_capabilities=selenium.webdriver.DesiredCapabilities.FIREFOX,
+            command_executor="http://127.0.0.1:4444/wd/hub")
+        cookies = session_broker(driver, config)
         if not cookies:
             session["cookies"] = None
             session["state"] = "FAILURE"
@@ -76,9 +67,20 @@ def broker_session(session_id):
                     del cookie["class"]
             session["cookies"] = cookies
             session["state"] = "SUCCESS"
+    except selenium.common.exceptions.TimeoutException as e:
+        session["state"] = "TIMEOUT"
+        try:
+            screenshot_png = driver.get_screenshot_as_png()
+            redis.setex("screenshot:%s" % session_id, 300, screenshot_png)
+            session["screenshot"] = "http://127.0.0.1:8080/screenshots/%s" % session_id
+        except:
+            pass
     except Exception as e:
         session["state"] = "EXCEPTION"
         session["reason"] = str(e)
+    finally:
+        if driver:
+            driver.quit()
 
     session["duration"] = time.time() - start_time
 
