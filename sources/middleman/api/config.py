@@ -10,3 +10,5 @@ class DefaultConfig:
     SESSION_COOKIE_SECURE = True
     SECRET_KEY = "development-key-please-change-me-cheese-nom-nom-nom"
     JSONIFY_PRETTYPRINT_REGULAR = True
+
+    MIDDLEMAN_SESSION_EXPIRATION = 300
