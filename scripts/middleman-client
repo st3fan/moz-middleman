@@ -1,4 +1,79 @@
 #!/usr/bin/env python
 
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+import json
+import optparse
+import time
+import sys
+
+import requests
+
+
 if __name__ == "__main__":
-    pass
+
+    parser = optparse.OptionParser()
+    parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true")
+    parser.add_option("-c", "--configuration")
+    parser.add_option("-m", "--method")
+    parser.add_option("-u", "--url")
+    parser.add_option("-e", "--email")
+    parser.add_option("-p", "--password")
+
+    (options, args) = parser.parse_args()
+
+    #
+    # Build the configuration
+    #
+
+    config = {}
+    if options.configuration:
+        with open(options.configuration) as fp:
+            config = json.load(fp)
+
+    if options.method:
+        config["method"] = options.method
+    if options.url:
+        config["url"] = options.url
+    if options.email:
+        config["email"] = options.email
+    if options.password:
+        config["password"] = options.password
+
+    #
+    # Submit the request
+    #
+
+    if options.verbose:
+        print "POSTED", json.dumps(config)
+
+    #data = json.dumps(config, indent=4)
+    submit_headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    submit_request = requests.post("http://127.0.0.1:8080/sessions", data=json.dumps(config), headers=submit_headers)
+    submit_request.raise_for_status()
+    submit_json = submit_request.json()
+
+    #
+    # Poll until it is finished
+    #
+
+    while True:
+
+        poll_request = requests.get("http://127.0.0.1:8080/sessions/%s" % submit_json["id"])
+        poll_request.raise_for_status()
+        poll_json = poll_request.json()
+
+        if options.verbose:
+            print "GOT", json.dumps(poll_json)
+
+        if poll_json["state"] != "WORKING":
+            break
+
+        time.sleep(2.5)
+
+    if poll_json["state"] != 'FINISHED':
+        sys.exit(1)
+
+    print poll_json["cookies"]
