@@ -16,6 +16,7 @@ if __name__ == "__main__":
 
     parser = optparse.OptionParser()
     parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true")
+    parser.add_option("-s", "--server", default="http://localhost:8080")
     parser.add_option("-c", "--configuration")
     parser.add_option("-m", "--method")
     parser.add_option("-u", "--url")
@@ -51,7 +52,7 @@ if __name__ == "__main__":
 
     #data = json.dumps(config, indent=4)
     submit_headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-    submit_request = requests.post("http://127.0.0.1:8080/sessions", data=json.dumps(config), headers=submit_headers)
+    submit_request = requests.post(options.server + "/sessions", data=json.dumps(config), headers=submit_headers)
     submit_request.raise_for_status()
     submit_json = submit_request.json()
 
@@ -61,7 +62,7 @@ if __name__ == "__main__":
 
     while True:
 
-        poll_request = requests.get("http://127.0.0.1:8080/sessions/%s" % submit_json["id"])
+        poll_request = requests.get(options.server + "/sessions/%s" % submit_json["id"])
         poll_request.raise_for_status()
         poll_json = poll_request.json()
 
