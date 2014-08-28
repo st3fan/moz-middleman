@@ -47,7 +47,7 @@ if __name__ == "__main__":
     #
 
     if options.verbose:
-        print "POSTED", json.dumps(config)
+        print >> sys.stderr, "POSTED", json.dumps(config)
 
     #data = json.dumps(config, indent=4)
     submit_headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
@@ -66,14 +66,13 @@ if __name__ == "__main__":
         poll_json = poll_request.json()
 
         if options.verbose:
-            print "GOT", json.dumps(poll_json)
+            print >> sys.stderr, "GOT", json.dumps(poll_json)
 
         if poll_json["state"] != "WORKING":
-            break
+            print json.dumps(poll_json["cookies"], indent=2)
+            sys.exit(0)
 
         time.sleep(2.5)
 
     if poll_json["state"] != 'FINISHED':
         sys.exit(1)
-
-    print poll_json["cookies"]
