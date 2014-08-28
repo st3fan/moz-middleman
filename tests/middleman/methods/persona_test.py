@@ -44,7 +44,7 @@ class PersonaTestCase(unittest.TestCase):
             "url": "https://marketplace.firefox.com/settings",
             "email": self.email,
             "password": self.password,
-            "login_button_xpath": "//a[@class='button alt persona only-logged-out']",
+            "login_button_xpath": "//a[@class='button persona logged-out']",
             "after_login_element_xpath": "//a[@href='/settings']"
         }
         cookies = persona.login(self.driver, marketplace_config)
