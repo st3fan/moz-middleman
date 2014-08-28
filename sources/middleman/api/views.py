@@ -41,3 +41,7 @@ def get_screenshot(screenshot_id):
     if not screenshot_png:
         abort(404)
     return Response(screenshot_png, mimetype="image/png")
+
+@app.route("/version", methods=["GET"])
+def get_version():
+    return jsonify(version="0.1")
