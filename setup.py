@@ -10,7 +10,8 @@ install_requires = [
     'Flask',
     'rq',
     'redis',
-    'selenium'
+    'selenium',
+    'gunicorn==19.1.1',
 ]
 
 setup(name="middleman",
