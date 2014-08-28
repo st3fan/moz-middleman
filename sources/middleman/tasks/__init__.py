@@ -15,6 +15,7 @@ import selenium.common.exceptions
 
 from middleman.methods.persona import login as persona_login
 from middleman.methods.fxa import login as fxa_login
+from middleman.methods.form import login as form_login
 
 
 redis = StrictRedis(host='localhost', port=6379, db=0)
@@ -26,10 +27,14 @@ def _broker_persona_session(driver, config):
 def _broker_fxa_session(driver, config):
     return fxa_login(driver, config)
 
+def _broker_form_session(driver, config):
+    return form_login(driver, config)
+
 
 SESSION_BROKERS = {
     "persona": _broker_persona_session,
-    "fxa": _broker_fxa_session
+    "fxa": _broker_fxa_session,
+    "form": _broker_form_session,
 }
 
 
