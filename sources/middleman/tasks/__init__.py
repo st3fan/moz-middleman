@@ -33,7 +33,17 @@ SESSION_BROKERS = {
 }
 
 
-def broker_session(session_id):
+def _webdriver_from_config(webdriver_config):
+    if webdriver_config["type"] == "local":
+        return selenium.webdriver.Firefox(
+            firefox_binary=webdriver_config.get("path"))
+    if webdriver_config["type"] == "remote":
+        return selenium.webdriver.Remote(
+            desired_capabilities=selenium.webdriver.DesiredCapabilities.FIREFOX,
+            command_executor=webdriver_config.get("url", "http://127.0.0.1:4444/wd/hub"))
+
+
+def broker_session(webdriver_config, session_id):
 
     session_json = redis.get("session:%s" % session_id)
     if not session_json:
@@ -49,12 +59,20 @@ def broker_session(session_id):
         redis.set("session:%s" % session_id, json.dumps(session))
         return
 
+    # Create the driver
+
+    driver = _webdriver_from_config(webdriver_config)
+    if not driver:
+        session["state"] = "FAILURE"
+        session["reason"] = "Could not create WebDriver from config '%s'" % str(webdriver_config)
+        redis.set("session:%s" % session_id, json.dumps(session))
+        return
+
+    # Run the script against the driver
+
     start_time = time.time()
 
     try:
-        driver = selenium.webdriver.Remote(
-            desired_capabilities=selenium.webdriver.DesiredCapabilities.FIREFOX,
-            command_executor="http://127.0.0.1:4444/wd/hub")
         cookies = session_broker(driver, config)
         if not cookies:
             session["cookies"] = None

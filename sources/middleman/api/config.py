@@ -12,3 +12,4 @@ class DefaultConfig:
     JSONIFY_PRETTYPRINT_REGULAR = True
 
     MIDDLEMAN_SESSION_EXPIRATION = 300
+    MIDDLEMAN_WEBDRIVER = { "type": "remote", "url": "http://127.0.0.1:4444/wd/hub" }

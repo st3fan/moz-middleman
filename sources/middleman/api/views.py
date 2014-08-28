@@ -22,7 +22,7 @@ def post_session():
     # TODO Validate config
     response = dict(config=config, id=str(uuid.uuid4()), state="WORKING")
     redis.setex("session:%s" % response["id"], app.config["MIDDLEMAN_SESSION_EXPIRATION"], json.dumps(response))
-    queue.enqueue(broker_session, response["id"])
+    queue.enqueue(broker_session, app.config["MIDDLEMAN_WEBDRIVER"], response["id"])
     del response["config"]
     return jsonify(response)
 
