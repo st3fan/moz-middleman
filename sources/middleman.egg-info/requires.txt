@@ -1,4 +1,0 @@
-Flask
-rq
-redis
-selenium
