@@ -1,0 +1,1 @@
+recursive-include sources/middleman *.html *.js *.css *.ttf *.svg *.eot *.woff *.png *.jpg *.txt

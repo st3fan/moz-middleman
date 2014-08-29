@@ -52,7 +52,7 @@ def get_screenshot(screenshot_id):
 
 @app.route("/version", methods=["GET"])
 def get_version():
-    return jsonify(version="0.2")
+    return jsonify(version="0.3")
 
 @app.route("/", methods=["GET"])
 def get_index():
