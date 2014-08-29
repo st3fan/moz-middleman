@@ -9,7 +9,7 @@ import time
 
 from redis import Redis, StrictRedis
 from rq import Queue
-from flask import Flask, jsonify, request, abort, Response, render_template
+from flask import Flask, jsonify, request, abort, Response, render_template, redirect, url_for
 
 from middleman.api import app
 from middleman.tasks import broker_session
@@ -53,6 +53,10 @@ def get_screenshot(screenshot_id):
 @app.route("/version", methods=["GET"])
 def get_version():
     return jsonify(version="0.1")
+
+@app.route("/", methods=["GET"])
+def get_index():
+    return redirect(url_for("get_status"))
 
 @app.route("/status", methods=["GET"])
 def get_status():
