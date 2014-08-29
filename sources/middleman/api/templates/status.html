@@ -52,7 +52,7 @@
         <h1>Sessions In Progress</h1>
       </div>
 
-      {% if not status %}
+      {% if not status_running %}
         <p>Nothing happenin'</p>
       {% else %}      
         <table class="table table-striped">
@@ -65,10 +65,33 @@
           </thead>
           
           <tbody>
-            {% for s in status %}
+            {% for s in status_running %}
               <tr>
                 <td>{{s.queue_time|datetime}}</td>
                 <td>{{s.start_time|datetime}}</td>
+                <td>{{s.url}}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+
+      {% if status_waiting %}
+        <div class="page-header">
+          <h1>Sessions Waiting</h1>
+        </div>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Queued</th>
+              <th>URL</th>
+            </tr>
+          </thead>
+          
+          <tbody>
+            {% for s in status_waiting %}
+              <tr>
+                <td>{{s.queue_time|datetime}}</td>
                 <td>{{s.url}}</td>
               </tr>
             {% endfor %}

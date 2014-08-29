@@ -60,17 +60,23 @@ def get_index():
 
 @app.route("/status", methods=["GET"])
 def get_status():
-    status = []
+    status_running = []
+    status_waiting = []
     for key in redis.keys("session:*"):
         session_json = redis.get(key)
         if session_json:
             session = json.loads(session_json)
             if session["state"] == 'WORKING':
-                status.append(dict(queue_time=session["queue_time"],
-                                   start_time=session["start_time"],
-                                   url=session["config"]["url"]))
+                if session["start_time"]:
+                    status_running.append(dict(queue_time=session["queue_time"],
+                                       start_time=session["start_time"],
+                                       url=session["config"]["url"]))
+                else:
+                    status_waiting.append(dict(queue_time=session["queue_time"],
+                                       url=session["config"]["url"]))
     history = [json.loads(i) for i in redis.lrange("history", 0, 4)]
-    return render_template("status.html", status=status, history=history)
+    return render_template("status.html", status_running=status_running, status_waiting=status_waiting,
+                           history=history)
 
 @app.route("/history", methods=["GET"])
 def get_history():
