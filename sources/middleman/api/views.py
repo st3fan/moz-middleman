@@ -69,9 +69,10 @@ def get_status():
                 status.append(dict(queue_time=session["queue_time"],
                                    start_time=session["start_time"],
                                    url=session["config"]["url"]))
-    return render_template("status.html", status=status)
+    history = [json.loads(i) for i in redis.lrange("history", 0, 4)]
+    return render_template("status.html", status=status, history=history)
 
 @app.route("/history", methods=["GET"])
 def get_history():
-    history = [json.loads(i) for i in redis.lrange("history", 0, 100)]
+    history = [json.loads(i) for i in redis.lrange("history", 0, 499)]
     return render_template("history.html", history=history)

@@ -72,6 +72,36 @@
           </tbody>
         </table>
       {% endif %}
+
+      <div class="page-header">
+        <h1>Recent Sessions</h1>
+      </div>
+
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Queued</th>
+            <th>Started</th>
+            <th>Finished</th>
+            <th>URL</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for h in history %}
+          <tr>
+            <td>{{h.queue_time|datetime}}</td>
+            <td>{{h.start_time|datetime}}</td>
+            <td>{{h.finish_time|datetime}}</td>
+            <td>{{h.url}}</td>
+            <td>{{h.state}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <p><a href="/history">See full session history ...</a></p>
       
     </div> <!-- /container -->
 
