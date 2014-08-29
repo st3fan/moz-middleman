@@ -21,8 +21,7 @@ setup(name="middleman",
       author="Stefan Arentz",
       author_email="sarentz@mozilla.com",
       install_requires = install_requires,
-      packages=["middleman", "middleman.methods", "middleman.tasks", "middleman.api", "middleman.api.static", "middlema
-n.api.templates"],
+      packages=["middleman", "middleman.methods", "middleman.tasks", "middleman.api", "middleman.api.static", "middleman.api.templates"],
       package_dir={'': 'sources'},
       include_package_data=True,
       scripts=["scripts/middleman-api", "scripts/middleman-worker", "scripts/middleman-client"])
