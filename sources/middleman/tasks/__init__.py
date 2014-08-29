@@ -28,6 +28,15 @@ SESSION_BROKERS = {
 }
 
 
+def _store_history_item_for_session(session):
+    history_item = dict(queue_time=session["queue_time"],
+                        start_time=session["start_time"],
+                        finish_time=session["finish_time"],
+                        url=session["config"]["url"],
+                        state=session["state"])
+    redis.lpush("history", json.dumps(history_item))
+
+
 def _webdriver_from_config(webdriver_config):
     if webdriver_config["type"] == "local":
         return selenium.webdriver.Firefox(
@@ -47,11 +56,16 @@ def broker_session(webdriver_config, session_id):
     session = json.loads(session_json)
     config = session["config"]
 
+    session["start_time"] = time.time()
+    redis.set("session:%s" % session_id, json.dumps(session))
+
     session_broker = SESSION_BROKERS.get(config["method"])
     if session_broker is None:
         session["state"] = "FAILURE"
         session["reason"] = "Unknown method '%s'" % session["config"]["method"]
+        session["finish_time"] = time.time()
         redis.set("session:%s" % session_id, json.dumps(session))
+        _store_history_item_for_session(session)
         return
 
     # Create the driver
@@ -60,12 +74,12 @@ def broker_session(webdriver_config, session_id):
     if not driver:
         session["state"] = "FAILURE"
         session["reason"] = "Could not create WebDriver from config '%s'" % str(webdriver_config)
+        session["finish_time"] = time.time()
         redis.set("session:%s" % session_id, json.dumps(session))
+        _store_history_item_for_session(session)
         return
 
     # Run the script against the driver
-
-    start_time = time.time()
 
     try:
         cookies = session_broker(driver, config)
@@ -96,6 +110,6 @@ def broker_session(webdriver_config, session_id):
         if driver:
             driver.quit()
 
-    session["duration"] = time.time() - start_time
-
+    session["finish_time"] = time.time()
     redis.setex("session:%s" % session_id, 300, json.dumps(session))
+    _store_history_item_for_session(session)
