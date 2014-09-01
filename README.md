@@ -147,7 +147,9 @@ Persona
 The following options are accepted for a Persona login:
 
 Option                     | Description
--------------------------- | -----------------------
+-------------------------- | ------------------------
+method                     | Always set to "persona"
+url                        | The URL of the original website
 email                      | The email address of the Persona account
 password                   | The password of the Persona account
 before_login_element_xpath | The XPath expression of the element on the original site to wait for before
@@ -155,4 +157,37 @@ login_button_xpath         | The XPath expression of the element to click to sta
 login_script               | The javascript expression to execute in the browser to start the login process
 after_login_element_xpath  | The XPath expression of the element on the original site to wait for after the Persona login process
 
+Firefox Accounts
+----------------
+
+The following options are accepted for a Firefox Accounts login:
+
+Option                     | Description
+-------------------------- | -----------------------
+method                     | Always set to "fxa"
+url                        | The URL of the original website
+email                      | The email address of the Firefox Accounts account
+password                   | The password of the Firefox Accounts account
+before_login_element_xpath | The XPath expression of the element on the original site to wait for before
+login_button_xpath         | The XPath expression of the element to click to start the login process
+login_script               | The javascript expression to execute in the browser to start the login process
+after_login_element_xpath  | The XPath expression of the element on the original site to wait for after the Persona login process
+
+Generic Form Based
+------------------
+
+The following options are accepted for a Form Based login:
+
+Option                     | Description
+-------------------------- | -----------------------
+method                     | Always set to "fxa"
+url                        | The URL of the original website
+username                   | The username to login with (can be anything, including an email)
+password                   | The password to login with
+before_login_element_xpath | The XPath expression of the element on the original site to wait for before
+username_field_xpath       | The XPath expression of the username field
+password_field_xpath       | The XPath expression of the password field
+login_button_xpath         | The XPath expression of the element to click to start the login process
+login_script               | The javascript expression to execute in the browser to start the login process
+after_login_element_xpath  | The XPath expression of the element on the original site to wait for after the Persona login process
 
