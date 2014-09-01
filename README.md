@@ -138,7 +138,21 @@ And once the broker is ready, the session state will change to `FINISHED` and a 
 }
 ```
 
-Status
-======
+Session Configuration Options
+=============================
 
-Work in progress. Everything is subject to change at this point.
+Persona
+-------
+
+The following options are accepted for a Persona login:
+
+Option                     | Description
+-------------------------- | -----------------------
+email                      | The email address of the Persona account
+password                   | The password of the Persona account
+before_login_element_xpath | The XPath expression of the element on the original site to wait for before
+login_button_xpath         | The XPath expression of the element to click to start the login process
+login_script               | The javascript expression to execute in the browser to start the login process
+after_login_element_xpath  | The XPath expression of the element on the original site to wait for after the Persona login process
+
+
