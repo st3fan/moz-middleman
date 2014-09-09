@@ -100,7 +100,7 @@ def broker_session(webdriver_config, session_id):
         try:
             screenshot_png = driver.get_screenshot_as_png()
             redis.setex("screenshot:%s" % session_id, 300, screenshot_png)
-            session["screenshot"] = "http://127.0.0.1:8080/screenshots/%s" % session_id
+            session["screenshot"] = session_id
         except:
             pass
     except Exception as e:
