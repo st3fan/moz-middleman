@@ -99,7 +99,7 @@ def broker_session(webdriver_config, session_id):
         session["state"] = "TIMEOUT"
         try:
             screenshot_png = driver.get_screenshot_as_png()
-            redis.setex("screenshot:%s" % session_id, 300, screenshot_png)
+            redis.setex("screenshot:%s" % session_id, 24*60*60, screenshot_png)
             session["screenshot"] = session_id
         except:
             pass
