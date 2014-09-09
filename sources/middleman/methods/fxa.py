@@ -24,7 +24,7 @@ def login(driver, config):
     # Wait for the page to be loaded.
     if "before_login_element_xpath" in config:
         e = WebDriverWait(driver, 30).until(
-            _conditions.presence_of_element_located(
+            expected_conditions.presence_of_element_located(
                 (By.XPATH, config['before_login_element_xpath'])))
 
     # Start the login. We have different strategies. We can find and
